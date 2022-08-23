@@ -1,0 +1,6 @@
+#!/usr/bin/python3
+
+import sys
+
+with open("/tmp/systemctl.txt","w") as f:
+    f.write(" ".join(sys.argv))
