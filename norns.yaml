@@ -8,7 +8,7 @@ windows:
           - sudo /etc/init.d/dbus start
           # Extract buffer from the container and display:
           #   docker cp norns-test-dummy:/tmp/Xvfb_screen0 . && xwud -in Xvfb_screen0
-          - Xvfb :0 -screen 0 128x64x16 -fbdir /tmp &
+          - Xvfb :0 -screen 0 1280x640x16 -fbdir /tmp &
           # Serve static display
           - cd /home/we/
           # - /usr/local/go/bin/go mod init github.com/schollz/test1
@@ -27,14 +27,19 @@ windows:
           - sleep 2
           - /home/we/norns/build/crone/crone
       - shell_command:
-          - cd /home/we/norns
-          - sleep 4
+          - cd /home/we/norns/sc
+          - sleep 2
+          - timeout 2 /home/we/norns/build/ws-wrapper/ws-wrapper ws://*:5556 /usr/local/bin/sclang -i maiden
+          - sleep 1
+          - ./install.sh
+          - timeout 2 /home/we/norns/build/ws-wrapper/ws-wrapper ws://*:5556 /usr/local/bin/sclang -i maiden
+          - sleep 1
           - /home/we/norns/build/ws-wrapper/ws-wrapper ws://*:5556 /usr/local/bin/sclang -i maiden
       - shell_command:
           - sleep 6
           - export DISPLAY=:0
           - cd /home/we/norns
-          - /home/we/norns/build/matron/matron
+          - /home/we/norns/build/ws-wrapper/ws-wrapper ws://*:5555 /home/we/norns/build/matron/matron
       - shell_command:
           - sleep 1
           - icecast2 -c /etc/icecast2/icecast.xml &

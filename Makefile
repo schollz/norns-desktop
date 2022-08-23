@@ -21,6 +21,7 @@ dust:
 	mkdir -p dust/audio/tape
 	mkdir -p dust/code
 	cd dust/code && \
-	git clone https://github.com/tehn/awake.git	
+	git clone https://github.com/norns-study-group/pirate-radio.git
+	git clone https://github.com/tehn/awake.git
 	sudo chown -R we:we dust
 

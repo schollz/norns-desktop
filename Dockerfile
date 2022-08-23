@@ -238,6 +238,6 @@ COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
 COPY icecast.xml /etc/icecast2/icecast.xml
 COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
-
+RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
 CMD tmuxp load norns
 
