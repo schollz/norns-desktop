@@ -1,0 +1,45 @@
+session_name: norns
+suppress_history: false
+windows:
+  - window_name: norns
+    layout: even-vertical
+    panes:
+      - shell_command:
+          # Extract buffer from the container and display:
+          #   docker cp norns-test-dummy:/tmp/Xvfb_screen0 . && xwud -in Xvfb_screen0
+          - Xvfb :0 -screen 0 128x64x16 -fbdir /tmp &
+          # Serve static display
+          - cd /home/we/
+          # - /usr/local/go/bin/go mod init github.com/schollz/test1
+          # - /usr/local/go/bin/go mod tidy
+          - /usr/local/go/bin/go run oled-server.go -window-name 'matron' -port 8889
+          # Connect vnc server to the display
+          - export DISPLAY=:0
+          - x11vnc -forever
+      - shell_command:
+          - export JACK_NO_START_SERVER=1
+          - export JACK_NO_AUDIO_RESERVATION=1
+          - jackd -V
+          - $(cat /etc/jackdrc)
+      - shell_command:
+          - cd /home/we/norns
+          - sleep 2
+          - ./crone.sh
+      - shell_command:
+          - sleep 4
+          - export DISPLAY=:0
+          - cd /home/we/norns
+          - ./matron.sh
+      - shell_command:
+          - sleep 1
+          - icecast2 -c /etc/icecast2/icecast.xml &
+          - sleep 2
+          - darkice -c /etc/darkice.cfg &
+          - sleep 2
+          - jack_connect crone:output_1 darkice:left
+          - jack_connect crone:output_2 darkice:right
+      - shell_command:
+          - cd /home/we/maiden
+          - sleep 6
+          # The following command is from ~/maiden/start.sh
+          - ./maiden server --app ./app/build --data ~/dust --doc ~/norns/doc

@@ -160,6 +160,7 @@ RUN ldconfig
 RUN groupadd we -g 1000 && \
     useradd we -g 1000 -u 1000 -m -s /bin/bash
 
+RUN apt-get -y install libncursesw5-dev sox
 RUN apt-get update -q && \
      apt-get install -qy --no-install-recommends \
              python3-pip \
