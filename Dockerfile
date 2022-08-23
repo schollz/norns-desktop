@@ -1,4 +1,5 @@
 FROM debian:stretch
+LABEL stage=setup
 
 ## setup environment 
 
@@ -77,12 +78,10 @@ RUN ldconfig
 ## UPGRADE CMAKE ##
 RUN mkdir -p /tmp/cmake 
 WORKDIR /tmp/cmake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1.tar.gz
-RUN tar -xvzf cmake-3.24.1.tar.gz
-WORKDIR /tmp/cmake/cmake-3.24.1
-RUN ./configure
-RUN make 
-RUN make install
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-linux-x86_64.tar.gz
+RUN tar -xvzf cmake-3.24.1-linux-x86_64.tar.gz
+RUN mv cmake-3.24.1-linux-x86_64/bin/* /usr/local/bin/
+RUN mv cmake-3.24.1-linux-x86_64/share/cmake-3.24 /usr/local/share/
 WORKDIR /
 RUN rm -rf /tmp/cmake
 
@@ -159,6 +158,10 @@ RUN groupadd we -g 1000 && \
     useradd we -g 1000 -u 1000 -m -s /bin/bash
 RUN adduser we sudo
 
+LABEL stage=build
+
+#I can't seem to get systemd to work
+#RUN apt update -q && apt install -y dbus systemd systemd-sysv init
 RUN apt-get update -q && \
      apt-get install -qy --no-install-recommends \
              python3-pip \
@@ -234,7 +237,7 @@ COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
 COPY icecast.xml /etc/icecast2/icecast.xml
 COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
-COPY systemctl /usr/local/bin/systemctl
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
+#CMD /bin/bash
 CMD tmuxp load norns
 

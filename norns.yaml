@@ -5,7 +5,6 @@ windows:
     layout: even-vertical
     panes:
       - shell_command:
-          - sudo /etc/init.d/dbus start
           # Extract buffer from the container and display:
           #   docker cp norns-test-dummy:/tmp/Xvfb_screen0 . && xwud -in Xvfb_screen0
           - Xvfb :0 -screen 0 1280x640x16 -fbdir /tmp &
