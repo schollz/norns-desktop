@@ -5,6 +5,7 @@ windows:
     layout: even-vertical
     panes:
       - shell_command:
+          - sudo /etc/init.d/dbus start
           # Extract buffer from the container and display:
           #   docker cp norns-test-dummy:/tmp/Xvfb_screen0 . && xwud -in Xvfb_screen0
           - Xvfb :0 -screen 0 128x64x16 -fbdir /tmp &
@@ -24,12 +25,16 @@ windows:
       - shell_command:
           - cd /home/we/norns
           - sleep 2
-          - ./crone.sh
+          - /home/we/norns/build/crone/crone
       - shell_command:
+          - cd /home/we/norns
           - sleep 4
+          - /home/we/norns/build/ws-wrapper/ws-wrapper ws://*:5556 /usr/local/bin/sclang -i maiden
+      - shell_command:
+          - sleep 6
           - export DISPLAY=:0
           - cd /home/we/norns
-          - ./matron.sh
+          - /home/we/norns/build/matron/matron
       - shell_command:
           - sleep 1
           - icecast2 -c /etc/icecast2/icecast.xml &
@@ -40,6 +45,6 @@ windows:
           - jack_connect crone:output_2 darkice:right
       - shell_command:
           - cd /home/we/maiden
-          - sleep 6
+          - sleep 8
           # The following command is from ~/maiden/start.sh
           - ./maiden server --app ./app/build --data ~/dust --doc ~/norns/doc

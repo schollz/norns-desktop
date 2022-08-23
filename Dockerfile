@@ -156,11 +156,12 @@ WORKDIR /
 RUN rm -rf /tmp/libmonome-$LIBMONOME_VERSION
 RUN ldconfig
 
+RUN apt-get -y install libncursesw5-dev sox systemd sudo
 
 RUN groupadd we -g 1000 && \
     useradd we -g 1000 -u 1000 -m -s /bin/bash
+RUN adduser we sudo
 
-RUN apt-get -y install libncursesw5-dev sox
 RUN apt-get update -q && \
      apt-get install -qy --no-install-recommends \
              python3-pip \
@@ -216,24 +217,27 @@ RUN git clone $NORNS_REPO && \
      ./waf configure --desktop && \
      ./waf build --desktop
 
+USER root
+RUN echo 'we:sleep' | chpasswd
+RUN echo 'we ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+USER we
+
 # # DUST - maiden data directory.
 # #RUN /home/we/maiden/project-setup.sh
-# RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
-# RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
+RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
+RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
 
-# COPY ["jackdrc", "/etc/jackdrc"]
-# COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
-# COPY ["tmux.conf", "/home/we/.tmux.conf"]
-# COPY ["oled-server.go", "/home/we/oled-server.go"]
-# COPY ["go.mod", "/home/we/go.mod"]
-# COPY ["go.sum", "/home/we/go.sum"]
-# COPY ["static", "/home/we/static"]
-# COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
+COPY ["jackdrc", "/etc/jackdrc"]
+COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
+COPY ["tmux.conf", "/home/we/.tmux.conf"]
+COPY ["oled-server.go", "/home/we/oled-server.go"]
+COPY ["go.mod", "/home/we/go.mod"]
+COPY ["go.sum", "/home/we/go.sum"]
+COPY ["static", "/home/we/static"]
+COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
+COPY icecast.xml /etc/icecast2/icecast.xml
+COPY darkice.cfg /etc/darkice.cfg
+COPY matronrc.lua /home/we/norns/matronrc.lua
 
-# COPY icecast.xml /etc/icecast2/icecast.xml
-# COPY darkice.cfg /etc/darkice.cfg
+CMD tmuxp load norns
 
-# CMD tmuxp load norns
-
-
-CMD bash
