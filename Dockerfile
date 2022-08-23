@@ -4,21 +4,22 @@ FROM debian:stretch
 
 ENV LANG=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive \
-    PATH="/usr/local/go/bin:$PATH" \
+    PATH="/usr/local/go/bin:/home/we/node/bin:/home/we/node/node_modules/bin:$PATH" \
     NORNS_TAG=71772c6ea43c90f15e7a5d3b7755d4beacc64c5b \
     NORNS_REPO=https://github.com/monome/norns.git \
     MAIDEN_TAG=905413da55d74f6f9fa83bcdb91cdb40eee7701f \
     MAIDEN_REPO=https://github.com/monome/maiden.git \
     GOLANG_VERSION=1.19 \
     JACK2_VERSION=1.9.19 \
-	LIBMONOME_VERSION=1.4.4 \
-	NANOMSG_VERSION=1.1.5 \
-	SUPERCOLLIDER_VERSION=3.12.0 \
-	SUPERCOLLIDER_PLUGINS_VERSION=3.11.1
+    LIBMONOME_VERSION=1.4.4 \
+    NANOMSG_VERSION=1.1.5 \
+    SUPERCOLLIDER_VERSION=3.12.0 \
+    SUPERCOLLIDER_PLUGINS_VERSION=3.11.1
 
 
 RUN apt-get update -yq
 RUN apt-get install -qy --no-install-recommends \
+            libncursesw5-dev sox sudo git libicu-dev libudev-dev pkg-config libncurses5-dev libssl-dev \
             apt-transport-https \
             apt-utils \
             ca-certificates \
@@ -74,7 +75,6 @@ RUN rm -rf /tmp/jack2
 RUN ldconfig
 
 ## UPGRADE CMAKE ##
-RUN apt-get install -y libssl-dev
 RUN mkdir -p /tmp/cmake 
 WORKDIR /tmp/cmake
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1.tar.gz
@@ -87,7 +87,6 @@ WORKDIR /
 RUN rm -rf /tmp/cmake
 
 ## INSTALL SUPERCOLLIDER ##
-RUN apt-get install -y git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config libncurses5-dev
 RUN mkdir -p /tmp/supercollider
 WORKDIR /tmp/supercollider
 RUN wget https://github.com/supercollider/supercollider/releases/download/Version-$SUPERCOLLIDER_VERSION/SuperCollider-$SUPERCOLLIDER_VERSION-Source.tar.bz2 -O sc.tar.bz2
@@ -111,7 +110,6 @@ RUN cmake -DCMAKE_BUILD_TYPE="Release" \
 RUN make -j1
 RUN make install
 WORKDIR /
-
 
 ## INSTALL SUPERCOLLIDER PLUGINS ##
 RUN mkdir -p /tmp/sc3-plugins
@@ -156,8 +154,7 @@ WORKDIR /
 RUN rm -rf /tmp/libmonome-$LIBMONOME_VERSION
 RUN ldconfig
 
-RUN apt-get -y install libncursesw5-dev sox sudo
-
+## add we / sleep ##
 RUN groupadd we -g 1000 && \
     useradd we -g 1000 -u 1000 -m -s /bin/bash
 RUN adduser we sudo
@@ -190,7 +187,6 @@ USER we
 WORKDIR /home/we
 
 ## INSTALL NODE ##
-ENV PATH="$PATH:/home/we/node/bin:/home/we/node/node_modules/bin"
 RUN wget https://nodejs.org/dist/v16.17.0/node-v16.17.0-linux-x64.tar.xz -O /tmp/node.tar.xz
 RUN mkdir -p /home/we/node
 RUN tar -xJf /tmp/node.tar.xz -C /home/we/node
