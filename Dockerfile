@@ -161,7 +161,8 @@ RUN adduser we sudo
 LABEL stage=build
 
 #I can't seem to get systemd to work
-#RUN apt update -q && apt install -y dbus systemd systemd-sysv init
+RUN apt update -q && apt install -y dbus 
+# systemd systemd-sysv init
 RUN apt-get update -q && \
      apt-get install -qy --no-install-recommends \
              python3-pip \
@@ -216,7 +217,11 @@ RUN git clone $NORNS_REPO && \
      ./waf configure --desktop && \
      ./waf build --desktop
 
+COPY restart_sclang.sh /home/we/norns/restart_sclang.sh
+COPY restart_matron.sh /home/we/norns/restart_matron.sh
 USER root
+RUN chmod +x /home/we/norns/restart_*.sh
+RUN chown -R we:we /home/we/norns/restart_*.sh
 RUN echo 'we:sleep' | chpasswd
 RUN echo 'we ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 USER we
