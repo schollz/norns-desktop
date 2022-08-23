@@ -156,7 +156,7 @@ WORKDIR /
 RUN rm -rf /tmp/libmonome-$LIBMONOME_VERSION
 RUN ldconfig
 
-RUN apt-get -y install libncursesw5-dev sox systemd sudo
+RUN apt-get -y install libncursesw5-dev sox sudo
 
 RUN groupadd we -g 1000 && \
     useradd we -g 1000 -u 1000 -m -s /bin/bash
@@ -238,6 +238,7 @@ COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
 COPY icecast.xml /etc/icecast2/icecast.xml
 COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
+COPY systemctl /usr/local/bin/systemctl
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
 CMD tmuxp load norns
 
