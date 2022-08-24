@@ -179,6 +179,10 @@ RUN apt-get update -q && \
              x11-apps \
              imagemagick \
              icecast2 \
+             lame \
+             espeak \
+             ffmpeg \
+             vorbis-tools \
              darkice && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/* && \
