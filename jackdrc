@@ -1,1 +1,1 @@
-/usr/bin/jackd -R -P 95 -d dummy -r 48000 -p 128
+/usr/bin/jackd -R -P 95 -d dummy -r 48000 -p 1024
