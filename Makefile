@@ -71,7 +71,6 @@ dust:
     git clone https://github.com/aidanreilly/saws && \
     git clone https://github.com/northern-information/fiahod && \
     git clone --recurse-submodules https://github.com/yotamorimoto/norns_grd grd && \
-    git clone https://github.com/markwheeler/arp_index && \
     git clone https://github.com/linusschrab/less_concepts_3 && \
     git clone https://github.com/cfdrake/twine && \
     git clone https://github.com/aidanreilly/squares && \
