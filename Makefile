@@ -1,5 +1,5 @@
 run: dust
-	docker build -t norns-docker .
+	docker build --rm -t norns-docker .
 	docker run --rm -it \
 		--cap-add=SYS_NICE \
 		--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
