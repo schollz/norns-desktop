@@ -26,6 +26,23 @@ to build and run:
 > make
 ```
 
+## real-time audio
+
+you can use jack to setup realtime audio. just set `jackdrc` with your soundcard, e.g.:
+
+```
+/usr/bin/jackd -R -d alsa -d hw:PCH
+```
+
+where "`PCH`" is the name of your card. for the example above I got it by using `/proc/asound/cards`:
+
+```
+> cat /proc/asound/cards
+ 0 [PCH            ]: HDA-Intel - HDA Intel PCH
+                      HDA Intel PCH at 0xe1348000 irq 137
+```
+
+
 ## urls
 
 if you are using it locally, here's the urls you'll need:

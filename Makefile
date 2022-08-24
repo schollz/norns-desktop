@@ -1,3 +1,5 @@
+AUDIOGROUP = $(shell getent group audio | cut -d: -f3)
+
 run: dust
 	docker build --rm -t norns-docker .
 	docker run --rm -it \
@@ -11,7 +13,10 @@ run: dust
 		-p 8889:8889 \
 		-p 8000:8000 \
 		-v `pwd`/dust:/home/we/dust \
+		-v `pwd`/jackdrc:/etc/jackdrc \
 		-p 10111:10111/udp \
+		--device /dev/snd \
+		--group-add $(AUDIOGROUP) \
 		norns-docker 
 pub:
 	docker run -d --rm -it \
@@ -85,6 +90,24 @@ dust:
 	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o fpconv.o fpconv.c
 	cd lua-cjson && cc  -shared -o cjson.so lua_cjson.o strbuf.o fpconv.o
 	cp lua-cjson/cjson.so dust/code/o-o-o/lib/
+	cp lua-cjson/cjson.so dust/code/pirate-radio/lib/
+	rm -rf lua-cjson
+	rm -rf dust2dust
+	git clone https://github.com/schollz/dust2dust
+	cd dust2dust && go build -v
+	cp dust2dust/dust2dust dust/code/pirate-radio/
+	rm -rf dust2dust
+
+
+deps:
+	rm -rf lua-cjson
+	git clone --depth 1 https://github.com/mpx/lua-cjson.git
+	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o lua_cjson.o lua_cjson.c
+	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o strbuf.o strbuf.c
+	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o fpconv.o fpconv.c
+	cd lua-cjson && cc  -shared -o cjson.so lua_cjson.o strbuf.o fpconv.o
+	cp lua-cjson/cjson.so dust/code/o-o-o/lib/
+	cp lua-cjson/cjson.so dust/code/pirate-radio/lib/
 	rm -rf lua-cjson
 	rm -rf dust2dust
 	git clone https://github.com/schollz/dust2dust

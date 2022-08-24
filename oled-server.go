@@ -59,9 +59,9 @@ func handle(w http.ResponseWriter, r *http.Request) (err error) {
 		err = displayToPNG(context.Background(), windowName, windowID, w)
 	} else if r.URL.Path == "/ws" {
 		err = handleWebsocket(w, r)
-		log.Debugf("ws: %w", err)
-		log.Debug(err.Error())
 		if err != nil {
+			log.Debugf("ws: %w", err)
+			log.Debug(err.Error())
 			err = nil
 		}
 	} else {

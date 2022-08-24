@@ -237,7 +237,6 @@ COPY ["go.sum", "/home/we/go.sum"]
 COPY ["static", "/home/we/static"]
 WORKDIR /home/we/
 RUN go build -v -x
-COPY ["jackdrc", "/etc/jackdrc"]
 COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
 COPY ["tmux.conf", "/home/we/.tmux.conf"]
 COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
