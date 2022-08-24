@@ -13,7 +13,15 @@ it might work with other computers/architectures, but things will have to be cha
 - other:
 
 ```
-sudo apt install gcc liblua5.3-dev
+> sudo apt install gcc liblua5.3-dev make
+```
+
+## install
+
+to build and run:
+
+```
+> make
 ```
 
 ## urls
