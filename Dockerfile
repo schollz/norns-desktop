@@ -8,8 +8,8 @@ ENV LANG=C.UTF-8 \
     PATH="/usr/local/go/bin:/home/we/node/bin:/home/we/node/node_modules/bin:$PATH" \
     NORNS_TAG=71772c6ea43c90f15e7a5d3b7755d4beacc64c5b \
     NORNS_REPO=https://github.com/monome/norns.git \
-    MAIDEN_TAG=905413da55d74f6f9fa83bcdb91cdb40eee7701f \
-    MAIDEN_REPO=https://github.com/monome/maiden.git \
+    MAIDEN_TAG=ce4471e25a45c87040817c0619f3596fa43060aa \
+    MAIDEN_REPO=https://github.com/schollz/maiden.git \
     GOLANG_VERSION=1.19 \
     JACK2_VERSION=1.9.19 \
     LIBMONOME_VERSION=1.4.4 \
@@ -22,6 +22,7 @@ RUN apt-get update -yq
 RUN apt-get install -qy --no-install-recommends \
             libncursesw5-dev sox sudo git libicu-dev libudev-dev pkg-config libncurses5-dev libssl-dev \
             apt-transport-https \
+            dbus \ 
             apt-utils \
             ca-certificates \
             gnupg2 \
@@ -161,8 +162,7 @@ RUN adduser we sudo
 LABEL stage=build
 
 #I can't seem to get systemd to work
-RUN apt update -q && apt install -y dbus 
-# systemd systemd-sysv init
+# RUN apt update -q && apt install -y systemd systemd-sysv init
 RUN apt-get update -q && \
      apt-get install -qy --no-install-recommends \
              python3-pip \
@@ -231,17 +231,20 @@ USER we
 RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
 RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
 
-COPY ["jackdrc", "/etc/jackdrc"]
-COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
-COPY ["tmux.conf", "/home/we/.tmux.conf"]
 COPY ["oled-server.go", "/home/we/oled-server.go"]
 COPY ["go.mod", "/home/we/go.mod"]
 COPY ["go.sum", "/home/we/go.sum"]
 COPY ["static", "/home/we/static"]
+WORKDIR /home/we/
+RUN go build -v -x
+COPY ["jackdrc", "/etc/jackdrc"]
+COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
+COPY ["tmux.conf", "/home/we/.tmux.conf"]
 COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
 COPY icecast.xml /etc/icecast2/icecast.xml
 COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
+# COPY maiden /home/we/maiden/maiden
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
 #CMD /bin/bash
 CMD tmuxp load norns

@@ -5,6 +5,8 @@ windows:
     layout: even-vertical
     panes:
       - shell_command:
+          - sudo /etc/init.d/dbus start
+          - sudo chown -R we:we /home/we/dust
           # Extract buffer from the container and display:
           #   docker cp norns-test-dummy:/tmp/Xvfb_screen0 . && xwud -in Xvfb_screen0
           - Xvfb :0 -screen 0 1280x640x16 -fbdir /tmp &
@@ -17,6 +19,7 @@ windows:
           - export DISPLAY=:0
           - x11vnc -forever
       - shell_command:
+          - sleep 1
           - export JACK_NO_START_SERVER=1
           - export JACK_NO_AUDIO_RESERVATION=1
           - jackd -V
