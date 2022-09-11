@@ -1,6 +1,18 @@
 FROM debian:stretch
 LABEL stage=setup
 
+## install audiowaveform 
+RUN apt-get update -yq
+RUN apt-get install -y cdbs cmake libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev git make cmake gcc g++ libmad0-dev \
+  libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
+  libboost-program-options-dev \
+  libboost-regex-dev
+RUN git clone https://github.com/bbc/audiowaveform.git /tmp/audiowaveform
+RUN mkdir -p /tmp/audiowaveform/build
+WORKDIR /tmp/audiowaveform/build
+RUN cmake -D ENABLE_TESTS=0 .. && make && make install
+RUN audiowaveform --help
+
 ## setup environment 
 
 ENV LANG=C.UTF-8 \
@@ -52,7 +64,8 @@ RUN apt-get install -qy --no-install-recommends \
             pkg-config \
             python-dev \
             unzip \
-            wget 
+            wget libstdc++
+
 
 ## INSTALL GO ##
 RUN wget https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz -O /tmp/go.tar.gz
@@ -220,6 +233,7 @@ RUN git clone $NORNS_REPO && \
      git submodule update --init --recursive && \
      ./waf configure --desktop && \
      ./waf build --desktop
+
 
 COPY restart_sclang.sh /home/we/norns/restart_sclang.sh
 COPY restart_matron.sh /home/we/norns/restart_matron.sh
