@@ -178,7 +178,7 @@ LABEL stage=build
 # RUN apt update -q && apt install -y systemd systemd-sysv init
 RUN apt-get update -q && \
      apt-get install -qy --no-install-recommends \
-             python3-pip \
+             aubio-tools python3-pip \
              python3-setuptools \
              python3-wheel \
              tmux \
