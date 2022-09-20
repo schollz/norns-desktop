@@ -277,7 +277,7 @@ image-rendering: crisp-edges;
     var keys = new Object();
     keyboard_codes=new Object();
     keyboard_codes[0] = 'RESERVED'
-    keyboard_codes[1] = 'ESC'
+    keyboard_codes[1] = 'ESCAPE'
     keyboard_codes[2] = '1'
     keyboard_codes[3] = '2'
     keyboard_codes[4] = '3'
@@ -302,10 +302,10 @@ image-rendering: crisp-edges;
     keyboard_codes[23] = 'I'
     keyboard_codes[24] = 'O'
     keyboard_codes[25] = 'P'
-    keyboard_codes[26] = 'LEFTBRACE'
-    keyboard_codes[27] = 'RIGHTBRACE'
+    keyboard_codes[26] = 'BRACKETLEFT'
+    keyboard_codes[27] = 'BRACKETRIGHT'
     keyboard_codes[28] = 'ENTER'
-    keyboard_codes[29] = 'LEFTCTRL'
+    keyboard_codes[29] = 'CONTROLLEFT'
     keyboard_codes[30] = 'A'
     keyboard_codes[31] = 'S'
     keyboard_codes[32] = 'D'
@@ -316,9 +316,9 @@ image-rendering: crisp-edges;
     keyboard_codes[37] = 'K'
     keyboard_codes[38] = 'L'
     keyboard_codes[39] = 'SEMICOLON'
-    keyboard_codes[40] = 'APOSTROPHE'
+    keyboard_codes[40] = 'QUOTE'
     keyboard_codes[41] = 'GRAVE'
-    keyboard_codes[42] = 'LEFTSHIFT'
+    keyboard_codes[42] = 'SHIFTLEFT'
     keyboard_codes[43] = 'BACKSLASH'
     keyboard_codes[44] = 'Z'
     keyboard_codes[45] = 'X'
@@ -328,9 +328,9 @@ image-rendering: crisp-edges;
     keyboard_codes[49] = 'N'
     keyboard_codes[50] = 'M'
     keyboard_codes[51] = 'COMMA'
-    keyboard_codes[52] = 'DOT'
+    keyboard_codes[52] = 'PERIOD'
     keyboard_codes[53] = 'SLASH'
-    keyboard_codes[54] = 'RIGHTSHIFT'
+    keyboard_codes[54] = 'SHIFTRIGHT'
     keyboard_codes[55] = 'KPASTERISK'
     keyboard_codes[56] = 'LEFTALT'
     keyboard_codes[57] = 'SPACE'
@@ -372,17 +372,17 @@ image-rendering: crisp-edges;
     keyboard_codes[94] = 'MUHENKAN'
     keyboard_codes[95] = 'KPJPCOMMA'
     keyboard_codes[96] = 'KPENTER'
-    keyboard_codes[97] = 'RIGHTCTRL'
+    keyboard_codes[97] = 'CONTROLRIGHT'
     keyboard_codes[98] = 'KPSLASH'
     keyboard_codes[99] = 'SYSRQ'
     keyboard_codes[100] = 'RIGHTALT'
     keyboard_codes[101] = 'LINEFEED'
     keyboard_codes[102] = 'HOME'
-    keyboard_codes[103] = 'UP'
+    keyboard_codes[103] = 'ARROWUP'
     keyboard_codes[104] = 'PAGEUP'
-    keyboard_codes[105] = 'LEFT'
-    keyboard_codes[106] = 'RIGHT'
-    keyboard_codes[107] = 'END'
+    keyboard_codes[105] = 'ARROWLEFT'
+    keyboard_codes[106] = 'ARROWRIGHT'
+    keyboard_codes[107] = 'ARROWEND'
     keyboard_codes[108] = 'DOWN'
     keyboard_codes[109] = 'PAGEDOWN'
     keyboard_codes[110] = 'INSERT'
@@ -405,34 +405,45 @@ image-rendering: crisp-edges;
     keyboard_codes[127] = 'COMPOSE'
     codes_keyboard  = new Object();
     for (const [key, value] of Object.entries(keyboard_codes)) {
-    codes_keyboard[value]=parseInt(key);
+        codes_keyboard[value]=parseInt(key);
     }
 
     //or however you are calling your method
-    function keydown(event) {
-        if (!(event.code in keys) || keys[event.code] == 0) {
-            keys[event.code] = 1;
-        } else {
-            keys[event.code] = 2;
+    function keyevent(event,down) {
+        code=event.code.toUpperCase();
+        if (code.startsWith("KEY")) {
+            code = code.slice(3);
         }
-        console.log(keys[event.code],codes_keyboard[event.key.toUpperCase()]);
+        if (code.startsWith("DIGIT")) {
+            code = code.slice(5);
+        }
+        if (code.startsWith("NUMPAD")) {
+            code = code.slice(6);
+        }
+        if (down) {
+            if (!(code in keys) || keys[code] == 0) {
+                keys[code] = 1;
+            } else {
+                keys[code] = 2;
+            }
+        } else {
+            keys[code] = 0;
+        }
+        console.log(keys[code],codes_keyboard[code]); 
         socket.send(JSON.stringify({
             kind: "keyboard",
-            n: keys[event.code],
-            z: codes_keyboard[event.key.toUpperCase()],
+            n: keys[code],
+            z: codes_keyboard[code],
         }));
     }
-
+    
+    function keydown(event) {
+        keyevent(event,true);
+    }
+    
     function keyup(event) {
-        keys[event.code] = 0;
-        console.log(keys[event.code],codes_keyboard[event.key.toUpperCase()]);
-        socket.send(JSON.stringify({
-            kind: "keyboard",
-            n: keys[event.code],
-            z: codes_keyboard[event.key.toUpperCase()],
-        }));
+        keyevent(event,false);
     }
-
     // </keyboard>
 
 
