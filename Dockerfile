@@ -248,7 +248,7 @@ USER we
 # #RUN /home/we/maiden/project-setup.sh
 RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
 RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
-RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/keyboard" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
+RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/brd" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
 
 COPY ["oled-server.go", "/home/we/oled-server.go"]
 COPY ["go.mod", "/home/we/go.mod"]

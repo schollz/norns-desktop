@@ -119,9 +119,10 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) (err error) {
 			oscClient.Send(msg)
 		} else if p.Kind == "keyboard" {
 			log.Debugf("recv: %v", p)
-			msg := osc.NewMessage("/remote/keyboard")
-			msg.Append(int32(p.N))
+			msg := osc.NewMessage("/remote/brd")
 			msg.Append(int32(p.Z))
+			msg.Append(int32(p.N))
+			oscClient.Send(msg)
 		} else if p.Kind == "img" {
 			go func() {
 				if gettingImage {
