@@ -18,6 +18,21 @@ this is heavily based off https://github.com/winder/norns-dev. the main differen
 > sudo apt install gcc liblua5.3-dev make
 ```
 
+add a `we` user:
+
+```
+sudo adduser we
+sudo adduser we dialout
+```
+
+(`dialout` is for the grid, you should use whatever group you see for `ls -la /dev/ttyUSB0` when the grid is plugged in, e.g.:
+
+```
+> ls -la /dev/ttyUSB0                      [21:08:46]
+crw-rw---- 1 root dialout 188, 0 Sep 19 21:07 /dev/ttyUSB0
+```
+)
+
 ## install
 
 to build and run:
@@ -42,6 +57,14 @@ where "`PCH`" is the name of your card. for the example above I got it by using 
                       HDA Intel PCH at 0xe1348000 irq 137
 ```
 
+
+## grid
+
+```
+sudo adduser we dialout
+```
+
+unplug and replug in grid.
 
 ## urls
 

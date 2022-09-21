@@ -269,14 +269,14 @@ image-rendering: crisp-edges;
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <script>
     var socket;
-
+    var imageTimer;
 
     // <keyboard>
     // testbed: https://jsfiddle.net/r9ec6mwj/11/
     document.addEventListener("keydown", keydown);
     document.addEventListener("keyup", keyup);
     var keys = new Object();
-    keyboard_codes=new Object();
+    keyboard_codes = new Object();
     keyboard_codes[0] = 'RESERVED'
     keyboard_codes[1] = 'ESCAPE'
     keyboard_codes[2] = '1'
@@ -384,7 +384,7 @@ image-rendering: crisp-edges;
     keyboard_codes[105] = 'ARROWLEFT'
     keyboard_codes[106] = 'ARROWRIGHT'
     keyboard_codes[107] = 'ARROWEND'
-    keyboard_codes[108] = 'DOWN'
+    keyboard_codes[108] = 'ARROWDOWN'
     keyboard_codes[109] = 'PAGEDOWN'
     keyboard_codes[110] = 'INSERT'
     keyboard_codes[111] = 'DELETE'
@@ -404,14 +404,14 @@ image-rendering: crisp-edges;
     keyboard_codes[125] = 'LEFTMETA'
     keyboard_codes[126] = 'RIGHTMETA'
     keyboard_codes[127] = 'COMPOSE'
-    codes_keyboard  = new Object();
+    codes_keyboard = new Object();
     for (const [key, value] of Object.entries(keyboard_codes)) {
-        codes_keyboard[value]=parseInt(key);
+        codes_keyboard[value] = parseInt(key);
     }
 
     //or however you are calling your method
-    function keyevent(event,down) {
-        code=event.code.toUpperCase();
+    function keyevent(event, down) {
+        code = event.code.toUpperCase();
         if (code.startsWith("KEY")) {
             code = code.slice(3);
         }
@@ -430,20 +430,20 @@ image-rendering: crisp-edges;
         } else {
             keys[code] = 0;
         }
-        console.log(keys[code],codes_keyboard[code]); 
+        console.log(keys[code], codes_keyboard[code]);
         socket.send(JSON.stringify({
             kind: "keyboard",
             n: keys[code],
             z: codes_keyboard[code],
         }));
     }
-    
+
     function keydown(event) {
-        keyevent(event,true);
+        keyevent(event, true);
     }
-    
+
     function keyup(event) {
-        keyevent(event,false);
+        keyevent(event, false);
     }
     // </keyboard>
 
@@ -679,16 +679,18 @@ image-rendering: crisp-edges;
                 'src',
                 'data:image/png;base64,' + data['img']
             );
-            socket.send(JSON.stringify({
-                kind: "img",
-            }));
         }
     };
     const socketOpenListener = (e) => {
         console.log('Connected');
-        socket.send(JSON.stringify({
-            kind: "img",
-        }));
+        if (imageTimer) {
+            clearInterval(imageTimer);
+        }
+        imageTimer = setInterval(function() {
+            socket.send(JSON.stringify({
+                kind: "img",
+            }));
+        }, 100);
     };
     const socketErrorListener = (e) => {
         console.error(e);
