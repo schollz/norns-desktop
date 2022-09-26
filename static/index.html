@@ -439,10 +439,12 @@ image-rendering: crisp-edges;
     }
 
     function keydown(event) {
+        event.preventDefault();
         keyevent(event, true);
     }
 
     function keyup(event) {
+        event.preventDefault();
         keyevent(event, false);
     }
     // </keyboard>
