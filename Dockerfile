@@ -257,6 +257,7 @@ COPY ["static", "/home/we/static"]
 WORKDIR /home/we/
 RUN go build -v -x
 COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
+COPY ["start_norns.sh", "/home/we/"]
 COPY ["tmux.conf", "/home/we/.tmux.conf"]
 COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
 COPY icecast.xml /etc/icecast2/icecast.xml
@@ -264,6 +265,7 @@ COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
 # COPY maiden /home/we/maiden/maiden
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
-#CMD /bin/bash
-CMD tmuxp load norns
-
+CMD /home/we/start_norns.sh
+# CMD ["tmuxp","load","norns"]
+# ENTRYPOINT "tmuxp load -d norns" && /bin/bash
+# CMD tmuxp load -d norns && /binb/bash
