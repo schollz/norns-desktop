@@ -1,32 +1,20 @@
 FROM debian:stretch
 LABEL stage=setup
 
-## install audiowaveform 
-RUN apt-get update -yq
-RUN apt-get install -y cdbs cmake libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev git make cmake gcc g++ libmad0-dev \
-  libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
-  libboost-program-options-dev \
-  libboost-regex-dev
-RUN git clone https://github.com/bbc/audiowaveform.git /tmp/audiowaveform
-RUN mkdir -p /tmp/audiowaveform/build
-WORKDIR /tmp/audiowaveform/build
-RUN cmake -D ENABLE_TESTS=0 .. && make && make install
-RUN audiowaveform --help
 
 ## setup environment 
-
 ENV LANG=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive \
     PATH="/usr/local/go/bin:/home/we/node/bin:/home/we/node/node_modules/bin:$PATH" \
-    NORNS_TAG=71772c6ea43c90f15e7a5d3b7755d4beacc64c5b \
+    NORNS_TAG=2faa96bd763b69e4b840adc4e2ee8e58e00522f0 \
     NORNS_REPO=https://github.com/monome/norns.git \
     MAIDEN_TAG=ce4471e25a45c87040817c0619f3596fa43060aa \
     MAIDEN_REPO=https://github.com/schollz/maiden.git \
-    GOLANG_VERSION=1.19 \
+    GOLANG_VERSION=1.19.2 \
     JACK2_VERSION=1.9.19 \
     LIBMONOME_VERSION=1.4.4 \
     NANOMSG_VERSION=1.1.5 \
-    SUPERCOLLIDER_VERSION=3.12.0 \
+    SUPERCOLLIDER_VERSION=3.12.2 \
     SUPERCOLLIDER_PLUGINS_VERSION=3.11.1
 
 
@@ -64,50 +52,52 @@ RUN apt-get install -qy --no-install-recommends \
             pkg-config \
             python-dev \
             unzip \
-            wget libstdc++
+            wget libstdc++ \ 
+            cdbs libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev git make cmake gcc g++ libmad0-dev \
+            libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
+            libboost-program-options-dev \
+            libboost-regex-dev
 
+
+## install audiowaveform 
+RUN git clone https://github.com/bbc/audiowaveform.git /tmp/audiowaveform && \
+    mkdir -p /tmp/audiowaveform/build && \
+    cd /tmp/audiowaveform/build && \
+    cmake -D ENABLE_TESTS=0 .. && make && make install && \
+    audiowaveform --help
 
 ## INSTALL GO ##
-RUN wget https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz -O /tmp/go.tar.gz
-RUN tar -C /usr/local -xzvf /tmp/go.tar.gz
-RUN rm -r /tmp/go.tar.gz
-RUN go version
+RUN wget https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz -O /tmp/go.tar.gz && \
+    tar -C /usr/local -xzvf /tmp/go.tar.gz && \
+    rm -r /tmp/go.tar.gz && \
+    go version
 
 ## INSTALL LDOC ##
 RUN luarocks install ldoc
 
 ## INSTALL JACK2 ##
-RUN mkdir -p /tmp/jack2
-RUN wget https://github.com/jackaudio/jack2/archive/v$JACK2_VERSION.tar.gz -O /tmp/jack2/jack2.tar.gz
-WORKDIR /tmp/jack2
-RUN tar xvfz jack2.tar.gz
-WORKDIR /tmp/jack2/jack2-$JACK2_VERSION
-RUN ./waf configure --classic --alsa=yes --firewire=no --iio=no --portaudio=no --prefix /usr
-RUN ./waf
-RUN ./waf install
-WORKDIR /
-RUN rm -rf /tmp/jack2
-RUN ldconfig
+RUN mkdir -p /tmp/jack2 && \ 
+    wget https://github.com/jackaudio/jack2/archive/v$JACK2_VERSION.tar.gz -O /tmp/jack2/jack2.tar.gz && \
+    cd /tmp/jack2 && \
+    tar xvfz jack2.tar.gz && \
+    cd /tmp/jack2/jack2-$JACK2_VERSION && \
+    ./waf configure --classic --alsa=yes --firewire=no --iio=no --portaudio=no --prefix /usr && \
+    ./waf && ./waf install && cd / && rm -rf /tmp/jack2 && ldconfig
 
 ## UPGRADE CMAKE ##
-RUN mkdir -p /tmp/cmake 
-WORKDIR /tmp/cmake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-linux-x86_64.tar.gz
-RUN tar -xvzf cmake-3.24.1-linux-x86_64.tar.gz
-RUN mv cmake-3.24.1-linux-x86_64/bin/* /usr/local/bin/
-RUN mv cmake-3.24.1-linux-x86_64/share/cmake-3.24 /usr/local/share/
-WORKDIR /
-RUN rm -rf /tmp/cmake
+RUN mkdir -p /tmp/cmake  && cd /tmp/cmake && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-linux-x86_64.tar.gz && \ 
+    tar -xvzf cmake-3.24.1-linux-x86_64.tar.gz && \
+    mv cmake-3.24.1-linux-x86_64/bin/* /usr/local/bin/ && \
+    mv cmake-3.24.1-linux-x86_64/share/cmake-3.24 /usr/local/share/ && \
+    cd / && rm -rf /tmp/cmake
 
 ## INSTALL SUPERCOLLIDER ##
-RUN mkdir -p /tmp/supercollider
-WORKDIR /tmp/supercollider
-RUN wget https://github.com/supercollider/supercollider/releases/download/Version-$SUPERCOLLIDER_VERSION/SuperCollider-$SUPERCOLLIDER_VERSION-Source.tar.bz2 -O sc.tar.bz2
-RUN tar xvf sc.tar.bz2
-WORKDIR /tmp/supercollider/SuperCollider-$SUPERCOLLIDER_VERSION-Source
-RUN mkdir -p build
-WORKDIR /tmp/supercollider/SuperCollider-$SUPERCOLLIDER_VERSION-Source/build
-RUN cmake -DCMAKE_BUILD_TYPE="Release" \
+RUN mkdir -p /tmp/supercollider && cd /tmp/supercollider && \
+    wget https://github.com/supercollider/supercollider/releases/download/Version-$SUPERCOLLIDER_VERSION/SuperCollider-$SUPERCOLLIDER_VERSION-Source.tar.bz2 -O sc.tar.bz2 && \
+    tar xvf sc.tar.bz2 && cd /tmp/supercollider/SuperCollider-$SUPERCOLLIDER_VERSION-Source && \
+    mkdir -p build && cd /tmp/supercollider/SuperCollider-$SUPERCOLLIDER_VERSION-Source/build && \
+    cmake -DCMAKE_BUILD_TYPE="Release" \
           -DCMAKE_INSTALL_PREFIX=/usr/local \
           -DBUILD_TESTING=OFF \
           -DENABLE_TESTSUITE=OFF \
@@ -119,61 +109,39 @@ RUN cmake -DCMAKE_BUILD_TYPE="Release" \
           -DSC_EL=OFF \
           -DSUPERNOVA=OFF \
           -DSC_VIM=OFF \
-          ..
-RUN make -j1
-RUN make install
-WORKDIR /
+          .. && \
+    make -j1 && make install && cd /
 
 ## INSTALL SUPERCOLLIDER PLUGINS ##
-RUN mkdir -p /tmp/sc3-plugins
-WORKDIR /tmp/sc3-plugins
-RUN git clone --depth=1 --recursive --branch Version-$SUPERCOLLIDER_PLUGINS_VERSION https://github.com/supercollider/sc3-plugins.git
-WORKDIR /tmp/sc3-plugins/sc3-plugins
-RUN mkdir -p build
-WORKDIR /tmp/sc3-plugins/sc3-plugins/build
-RUN cmake -DSC_PATH=/tmp/supercollider/SuperCollider-$SUPERCOLLIDER_VERSION-Source \
+RUN mkdir -p /tmp/sc3-plugins && cd /tmp/sc3-plugins && \
+    git clone --depth=1 --recursive --branch Version-$SUPERCOLLIDER_PLUGINS_VERSION https://github.com/supercollider/sc3-plugins.git && \
+    cd /tmp/sc3-plugins/sc3-plugins && mkdir -p build && \
+    cd /tmp/sc3-plugins/sc3-plugins/build && \
+    cmake -DSC_PATH=/tmp/supercollider/SuperCollider-$SUPERCOLLIDER_VERSION-Source \
           -DNATIVE=OFF \
-          ..
-RUN cmake --build . --config Release -- -j1
-RUN cmake --build . --config Release --target install
-WORKDIR /
-RUN rm -rf /tmp/sc3-plugins
-RUN ldconfig
+          .. && \
+    cmake --build . --config Release -- -j1 && \
+    cmake --build . --config Release --target install && \
+    cd / && rm -rf /tmp/sc3-plugins && ldconfig
 
 ## INSTALL NANOMSG ##
-RUN mkdir -p /tmp/nanomsg
-WORKDIR /tmp/nanomsg
-RUN wget https://github.com/nanomsg/nanomsg/archive/$NANOMSG_VERSION.tar.gz -O nanomsg.tar.gz
-RUN tar -xvzf nanomsg.tar.gz
-WORKDIR /tmp/nanomsg/nanomsg-$NANOMSG_VERSION
-RUN mkdir -p /tmp/nanomsg/nanomsg-$NANOMSG_VERSION/build
-WORKDIR /tmp/nanomsg/nanomsg-$NANOMSG_VERSION/build
-RUN cmake ..
-RUN cmake --build .
-RUN cmake --build . --target install
-WORKDIR /
-RUN rm -rf /tmp/nanomsg
-RUN ldconfig
+RUN mkdir -p /tmp/nanomsg && cd /tmp/nanomsg && \
+    wget https://github.com/nanomsg/nanomsg/archive/$NANOMSG_VERSION.tar.gz -O nanomsg.tar.gz && \
+    tar -xvzf nanomsg.tar.gz && cd /tmp/nanomsg/nanomsg-$NANOMSG_VERSION && \
+    mkdir -p /tmp/nanomsg/nanomsg-$NANOMSG_VERSION/build && \
+    cd /tmp/nanomsg/nanomsg-$NANOMSG_VERSION/build && \
+    cmake .. && cmake --build . && cmake --build . --target install && \
+    cd / && rm -rf /tmp/nanomsg && ldconfig
 
 ## INSTALL LIBMONOME ##
-WORKDIR /tmp/
-RUN wget https://github.com/monome/libmonome/archive/v$LIBMONOME_VERSION.tar.gz -O libmonome.tar.gz
-RUN tar -xvzf libmonome.tar.gz
-WORKDIR /tmp/libmonome-$LIBMONOME_VERSION
-RUN ./waf configure --disable-udev --disable-osc
-RUN ./waf
-RUN ./waf install
-WORKDIR /
-RUN rm -rf /tmp/libmonome-$LIBMONOME_VERSION
-RUN ldconfig
+RUN cd /tmp/ && wget https://github.com/monome/libmonome/archive/v$LIBMONOME_VERSION.tar.gz -O libmonome.tar.gz && \
+    tar -xvzf libmonome.tar.gz && cd /tmp/libmonome-$LIBMONOME_VERSION && \
+    ./waf configure --disable-udev --disable-osc && \
+    ./waf && ./waf install && \
+    cd / && rm -rf /tmp/libmonome-$LIBMONOME_VERSION && ldconfig
 
-## add we / sleep ##
-RUN groupadd we -g 1000 && \
-    useradd we -g 1000 -u 1000 -m -s /bin/bash
-RUN adduser we sudo
 
 LABEL stage=build
-
 #I can't seem to get systemd to work
 # RUN apt update -q && apt install -y systemd systemd-sysv init
 RUN apt-get update -q && \
@@ -204,6 +172,10 @@ RUN apt-get update -q && \
 # darkice installs libjack-jackd2-0, we need to remove it
 RUN dpkg --remove --force-depends libjack-jackd2-0
 
+## add we / sleep ##
+RUN groupadd we -g 1000 && \
+    useradd we -g 1000 -u 1000 -m -s /bin/bash && \
+    adduser we sudo
 USER we
 WORKDIR /home/we
 
@@ -235,6 +207,21 @@ RUN git clone $NORNS_REPO && \
      ./waf build --desktop
 
 
+## build oled server
+COPY ["oled-server.go", "/home/we/oled-server.go"]
+COPY ["go.mod", "/home/we/go.mod"]
+COPY ["go.sum", "/home/we/go.sum"]
+COPY ["static", "/home/we/static"]
+WORKDIR /home/we/
+RUN go build -v -x
+
+# # DUST - maiden data directory.
+# #RUN /home/we/maiden/project-setup.sh
+RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
+RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
+RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/brd" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
+
+## copy restart files
 COPY restart_sclang.sh /home/we/norns/restart_sclang.sh
 COPY restart_matron.sh /home/we/norns/restart_matron.sh
 USER root
@@ -244,18 +231,6 @@ RUN echo 'we:sleep' | chpasswd
 RUN echo 'we ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 USER we
 
-# # DUST - maiden data directory.
-# #RUN /home/we/maiden/project-setup.sh
-RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
-RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
-RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/brd" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
-
-COPY ["oled-server.go", "/home/we/oled-server.go"]
-COPY ["go.mod", "/home/we/go.mod"]
-COPY ["go.sum", "/home/we/go.sum"]
-COPY ["static", "/home/we/static"]
-WORKDIR /home/we/
-RUN go build -v -x
 COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
 COPY ["start_norns.sh", "/home/we/"]
 COPY ["tmux.conf", "/home/we/.tmux.conf"]
@@ -265,6 +240,7 @@ COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
 # COPY maiden /home/we/maiden/maiden
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
+#CMD /bin/bash
 CMD /home/we/start_norns.sh
 # CMD ["tmuxp","load","norns"]
 # ENTRYPOINT "tmuxp load -d norns" && /bin/bash
