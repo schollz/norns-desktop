@@ -1,8 +1,9 @@
 #/bin/bash
 
-sudo /etc/init.d/dbus start
+# sudo /etc/init.d/dbus start
 sudo chown -R we:we /home/we/dust
 Xvfb :0 -screen 0 1280x640x16 -fbdir /tmp &
+sleep 1
 cd /home/we/
 LOGGER=info /usr/local/go/bin/go run oled-server.go -window-name 'matron' -port 8889 &
 sleep 1
