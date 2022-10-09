@@ -140,13 +140,17 @@ RUN cd /tmp/ && wget https://github.com/monome/libmonome/archive/v$LIBMONOME_VER
     ./waf && ./waf install && \
     cd / && rm -rf /tmp/libmonome-$LIBMONOME_VERSION && ldconfig
 
+## INSTALL AUBIOONSET 
+RUN git clone https://git.aubio.org/aubio/aubio /tmp/aubio && cd /tmp/aubio && \
+    make && cd /tmp/aubio && ./waf install --destdir=/ && ldconfig && \
+    cd / && rm -rf /tmp/aubio && aubioonset --help
 
 LABEL stage=build
 #I can't seem to get systemd to work
 # RUN apt update -q && apt install -y systemd systemd-sysv init
 RUN apt-get update -q && \
      apt-get install -qy --no-install-recommends \
-             aubio-tools python3-pip \
+             python3-pip \
              python3-setuptools \
              python3-wheel \
              tmux \
@@ -240,7 +244,7 @@ COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
 # COPY maiden /home/we/maiden/maiden
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
-#CMD /bin/bash
+# CMD /bin/bash
 CMD /home/we/start_norns.sh
 # CMD ["tmuxp","load","norns"]
 # ENTRYPOINT "tmuxp load -d norns" && /bin/bash
