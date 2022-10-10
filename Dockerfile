@@ -224,7 +224,8 @@ RUN go build -v -x
 RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
 RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
 RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/brd" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
-
+RUN sed -i 's/if _menu.keyboardcode/if c=="MINUS" then _menu.penc(3,value*-1) elseif c=="EQUAL" then _menu.penc(3,value) end; if _menu.keyboardcode/g' /home/we/norns/lua/core/menu.lua
+RUN sed -i 's/if value==1 then/if value>=1 then/g' /home/we/norns/lua/core/menu.lua
 ## copy restart files
 COPY restart_sclang.sh /home/we/norns/restart_sclang.sh
 COPY restart_matron.sh /home/we/norns/restart_matron.sh
