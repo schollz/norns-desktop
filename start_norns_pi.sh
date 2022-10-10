@@ -10,7 +10,9 @@ sleep 1
 # start jack
 export JACK_NO_START_SERVER=1
 export JACK_NO_AUDIO_RESERVATION=1
-/usr/bin/jackd -R -P 95 -d alsa -d hw:USB &
+#/usr/bin/jackd -R -P 95 -d alsa -d hw:USB & # 2x2 USB interface
+/usr/bin/jackd -R -P 95 -d alsa -P hw:USB -i 2 & # playback only
+# sometimes "USB" doesn't work and you need to find it using `aplay -l`
 sleep 1
 
 # start crone
