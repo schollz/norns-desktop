@@ -131,13 +131,4 @@ deps:
 	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o strbuf.o strbuf.c
 	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o fpconv.o fpconv.c
 	cd lua-cjson && cc  -shared -o cjson.so lua_cjson.o strbuf.o fpconv.o
-	cp lua-cjson/cjson.so dust/code/break-ops/lib/
-# 	cp lua-cjson/cjson.so dust/code/o-o-o/lib/
-# 	cp lua-cjson/cjson.so dust/code/pirate-radio/lib/
-# 	rm -rf lua-cjson
-# 	rm -rf dust2dust
-# 	git clone https://github.com/schollz/dust2dust
-# 	cd dust2dust && go build -v
-# 	cp dust2dust/dust2dust dust/code/pirate-radio/
-# 	rm -rf dust2dust
-
+	cp lua-cjson/cjson.so dust/code/zxcvbn/lib/
