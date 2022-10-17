@@ -1,5 +1,6 @@
-docker kill $(docker container ls -q)
-docker build --rm -t norns-docker .
+docker kill $(docker ps -a -q --filter="name=norns-docker")
+docker rm norns-docker
+#docker build --rm -t norns-docker .
 docker run -d --rm -it \
 	--cap-add=SYS_NICE \
 	--cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
@@ -14,7 +15,8 @@ docker run -d --rm -it \
 	-v `pwd`/jackdrc:/etc/jackdrc \
 	-p 10111:10111/udp \
 	--device /dev/snd \
+	--name norns-docker \
 	--group-add $(getent group audio | cut -d: -f3) \
 	norns-docker 
 sleep 1
-docker logs --follow $(docker container ls -q)
+docker logs --follow $(docker ps -a -q --filter="name=norns-docker")
