@@ -10,7 +10,7 @@ sleep 1
 # start jack
 export JACK_NO_START_SERVER=1
 export JACK_NO_AUDIO_RESERVATION=1
-export JACK_AUDIO=$(aplay -l | grep USB | sed 's/:/ /g' | awk '{print $2}')
+export JACK_AUDIO=$(aplay -l | head -n1 | grep USB | sed 's/:/ /g' | awk '{print $2}')
 /usr/bin/jackd -R -P 95 -d alsa -P hw:$JACK_AUDIO -i 2 & # playback only
 #/usr/bin/jackd -R -P 95 -d alsa -d hw:$JACK_AUDIO -p 1024 & # 2x2 USB interface
 
