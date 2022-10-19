@@ -1,6 +1,9 @@
 AUDIOGROUP = $(shell getent group audio | cut -d: -f3)
 GRIDGROUP = $(shell getent group dialout | cut -d: -f3)
 
+build:
+	docker build -t norns-docker .
+
 run: dust
 	docker build --rm -t norns-docker .
 	docker run --rm -it \
