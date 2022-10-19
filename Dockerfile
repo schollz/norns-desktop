@@ -226,6 +226,7 @@ RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/nor
 RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/brd" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
 RUN sed -i 's/if _menu.keyboardcode/if c=="MINUS" then _menu.penc(3,value*-1) elseif c=="EQUAL" then _menu.penc(3,value) end; if _menu.keyboardcode/g' /home/we/norns/lua/core/menu.lua
 RUN sed -i 's/if value==1 then/if value>=1 then/g' /home/we/norns/lua/core/menu.lua
+RUN sed -i 's/elseif _menu.mode then _menu.keycode(c,value)/elseif (c=="F1" or c=="F2" or c=="F3" or c=="F4") then _menu.set_mode(true); _menu.keycode(c,value) elseif c=="F5" then _menu.set_mode(note _menu.mode) elseif _menu.mode then _menu.keycode(c,value)/g' norns/lua/core/keyboard.lua
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions
 RUN cp /home/we/norns/sc/norns-config.sc /home/we/.local/share/SuperCollider/Extensions/
 
