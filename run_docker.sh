@@ -13,6 +13,7 @@ docker run -d --rm -it \
 	-p 8000:8000 \
 	-v `pwd`/dust:/home/we/dust \
 	-v `pwd`/jackdrc:/etc/jackdrc \
+	-v `pwd`/repl-endpoints.json:/home/we/maiden/app/build/repl-endpoints.json \
 	-p 10111:10111/udp \
 	--device /dev/snd \
 	--name norns-docker \

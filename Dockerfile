@@ -242,7 +242,6 @@ USER we
 COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
 COPY ["start_norns.sh", "/home/we/"]
 COPY ["tmux.conf", "/home/we/.tmux.conf"]
-COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
 COPY icecast.xml /etc/icecast2/icecast.xml
 COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
