@@ -6,7 +6,7 @@ LABEL stage=setup
 ENV LANG=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive \
     PATH="/usr/local/go/bin:/home/we/node/bin:/home/we/node/node_modules/bin:$PATH" \
-    NORNS_TAG=2faa96bd763b69e4b840adc4e2ee8e58e00522f0 \
+    NORNS_TAG=41005a9e59e264e346196ea1cdf2284317f93ff6 \
     NORNS_REPO=https://github.com/monome/norns.git \
     MAIDEN_TAG=ce4471e25a45c87040817c0619f3596fa43060aa \
     MAIDEN_REPO=https://github.com/schollz/maiden.git \
@@ -223,10 +223,10 @@ RUN go build -v -x
 # #RUN /home/we/maiden/project-setup.sh
 RUN sed -i 's/norns.disk/100000/g' /home/we/norns/lua/core/menu/tape.lua
 RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/norns/lua/core/screen.lua
-RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/brd" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
-RUN sed -i 's/if _menu.keyboardcode/if c=="MINUS" then _menu.penc(3,value*-1) elseif c=="EQUAL" then _menu.penc(3,value) end; if _menu.keyboardcode/g' /home/we/norns/lua/core/menu.lua
-RUN sed -i 's/if value==1 then/if value>=1 then/g' /home/we/norns/lua/core/menu.lua
-RUN sed -i 's/elseif _menu.mode then _menu.keycode(c,value)/elseif (c=="F1" or c=="F2" or c=="F3" or c=="F4") and value==1 then _menu.set_mode(true); _menu.keycode(c,value) elseif (c=="F5" and value==1) then _menu.set_mode(not _menu.mode) elseif _menu.mode then _menu.keycode(c,value)/g' norns/lua/core/keyboard.lua
+#RUN sed -i 's/if cmd=="\/remote\/key" then/if cmd=="\/remote\/brd" then keyboard.process(1,n,val) elseif cmd=="\/remote\/key" then/g' /home/we/norns/lua/core/osc.lua
+#RUN sed -i 's/if _menu.keyboardcode/if c=="MINUS" then _menu.penc(3,value*-1) elseif c=="EQUAL" then _menu.penc(3,value) end; if _menu.keyboardcode/g' /home/we/norns/lua/core/menu.lua
+#RUN sed -i 's/if value==1 then/if value>=1 then/g' /home/we/norns/lua/core/menu.lua
+#RUN sed -i 's/elseif _menu.mode then _menu.keycode(c,value)/elseif (c=="F1" or c=="F2" or c=="F3" or c=="F4") and value==1 then _menu.set_mode(true); _menu.keycode(c,value) elseif (c=="F5" and value==1) then _menu.set_mode(not _menu.mode) elseif _menu.mode then _menu.keycode(c,value)/g' norns/lua/core/keyboard.lua
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions
 RUN cp /home/we/norns/sc/norns-config.sc /home/we/.local/share/SuperCollider/Extensions/
 
