@@ -229,6 +229,9 @@ RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/nor
 #RUN sed -i 's/elseif _menu.mode then _menu.keycode(c,value)/elseif (c=="F1" or c=="F2" or c=="F3" or c=="F4") and value==1 then _menu.set_mode(true); _menu.keycode(c,value) elseif (c=="F5" and value==1) then _menu.set_mode(not _menu.mode) elseif _menu.mode then _menu.keycode(c,value)/g' norns/lua/core/keyboard.lua
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions
 RUN cp /home/we/norns/sc/norns-config.sc /home/we/.local/share/SuperCollider/Extensions/
+RUN git clone https://github.com/schollz/faustsc /tmp/faustsc && cd /tmp/faustsc && \
+    make && \
+    mv /tmp/faustsc/fverb/build /home/we/.local/share/SuperCollider/Extensions/fverb
 
 ## copy restart files
 COPY restart_sclang.sh /home/we/norns/restart_sclang.sh
