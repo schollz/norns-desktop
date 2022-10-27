@@ -407,7 +407,7 @@ function base64ToArrayBuffer(base64) {
 const socketMessageListener = (e) => {
     data = JSON.parse(e.data);
     if ('img' in data) {
-        document.getElementById('img').setAttribute(
+        document.getElementById('norns_screen').setAttribute(
             'src',
             'data:image/png;base64,' + data['img']
         );
