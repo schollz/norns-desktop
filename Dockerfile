@@ -210,6 +210,21 @@ RUN git clone $NORNS_REPO && \
      ./waf configure --desktop && \
      ./waf build --desktop
 
+# Build PortedPlugins
+RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
+RUN cd /tmp &&  wget https://github.com/supercollider/supercollider/archive/refs/tags/Version-3.12.2.tar.gz && \
+    tar -xvzf Version-3.12.2.tar.gz && \
+    rm Version-3.12.2.tar.gz && \
+    git clone https://github.com/madskjeldgaard/portedplugins && \
+    cd portedplugins && \
+    git submodule update --init --recursive && \
+    sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.cpp && \
+    sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.h && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=/tmp/supercollider-Version-3.12.2 -DCMAKE_INSTALL_PREFIX=/home/we/.local/share/SuperCollider/Extensions/ -DSUPERNOVA=OFF && \
+    cmake --build . --config Release && \
+    cmake --build . --config Release --target install
 
 ## build oled server
 COPY ["oled-server.go", "/home/we/oled-server.go"]
@@ -250,7 +265,6 @@ COPY icecast.xml /etc/icecast2/icecast.xml
 COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
 # COPY maiden /home/we/maiden/maiden
-RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
 # CMD /bin/bash
 CMD /home/we/start_norns.sh
 # CMD ["tmuxp","load","norns"]
