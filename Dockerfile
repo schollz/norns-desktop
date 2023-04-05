@@ -212,17 +212,17 @@ RUN git clone $NORNS_REPO && \
 
 # Build PortedPlugins
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
-RUN cd /tmp &&  wget https://github.com/supercollider/supercollider/archive/refs/tags/Version-3.12.2.tar.gz && \
-    tar -xvzf Version-3.12.2.tar.gz && \
-    rm Version-3.12.2.tar.gz && \
-    git clone https://github.com/madskjeldgaard/portedplugins && \
+RUN cd /tmp &&  wget https://github.com/supercollider/supercollider/archive/refs/tags/Version-$SUPERCOLLIDER_VERSION.tar.gz && \
+    tar -xvzf Version-$SUPERCOLLIDER_VERSION.tar.gz && \
+    rm Version-$SUPERCOLLIDER_VERSION.tar.gz && \
+    git clone https://github.com/schollz/portedplugins && \
     cd portedplugins && \
     git submodule update --init --recursive && \
     sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.cpp && \
     sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.h && \
     mkdir build && \
     cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=/tmp/supercollider-Version-3.12.2 -DCMAKE_INSTALL_PREFIX=/home/we/.local/share/SuperCollider/Extensions/ -DSUPERNOVA=OFF && \
+    cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=/tmp/supercollider-Version-$SUPERCOLLIDER_VERSION -DCMAKE_INSTALL_PREFIX=/home/we/.local/share/SuperCollider/Extensions/ -DSUPERNOVA=OFF && \
     cmake --build . --config Release && \
     cmake --build . --config Release --target install
 
