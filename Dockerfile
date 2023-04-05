@@ -67,7 +67,7 @@ RUN git clone https://github.com/bbc/audiowaveform.git /tmp/audiowaveform && \
     audiowaveform --help
 
 ## INSTALL GO ##
-RUN wget https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz -O /tmp/go.tar.gz && \
+RUN wget https://golang.org/dl/go$GOLANG_VERSION.linux-arm64.tar.gz -O /tmp/go.tar.gz && \
     tar -C /usr/local -xzvf /tmp/go.tar.gz && \
     rm -r /tmp/go.tar.gz && \
     go version
@@ -184,7 +184,7 @@ USER we
 WORKDIR /home/we
 
 ## INSTALL NODE ##
-RUN wget https://nodejs.org/dist/v16.17.0/node-v16.17.0-linux-x64.tar.xz -O /tmp/node.tar.xz
+RUN wget https://nodejs.org/dist/v18.15.0/node-v18.15.0-linux-armv7l.tar.xz -O /tmp/node.tar.xz
 RUN mkdir -p /home/we/node
 RUN tar -xJf /tmp/node.tar.xz -C /home/we/node
 RUN mv /home/we/node/node-*/* /home/we/node/
