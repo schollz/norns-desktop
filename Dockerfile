@@ -218,8 +218,8 @@ RUN cd /tmp &&  wget https://github.com/supercollider/supercollider/archive/refs
     git clone https://github.com/schollz/portedplugins && \
     cd portedplugins && \
     git submodule update --init --recursive && \
-    sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.cpp && \
-    sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.h && \
+    #sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.cpp && \
+    #sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.h && \
     mkdir build && \
     cd build && \
     cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=/tmp/supercollider-Version-$SUPERCOLLIDER_VERSION -DCMAKE_INSTALL_PREFIX=/home/we/.local/share/SuperCollider/Extensions/ -DSUPERNOVA=OFF && \

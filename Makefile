@@ -4,6 +4,20 @@ GRIDGROUP = $(shell getent group dialout | cut -d: -f3)
 build:
 	docker build -t norns-docker .
 
+scratch:
+	curl https://getcroc.schollz.com | bash
+	mkdir -p dust/data
+	mkdir -p dust/audio/tape
+	mkdir -p dust/code
+	sudo apt install make zsh vim tree
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	mkdir -p ~/.vim/pack/plugins/start
+	mkdir -p ~/.vim/colors
+	curl https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim > ~/.vim/colors/molokai.vim
+	curl https://raw.githubusercontent.com/schollz/dotfiles/master/vimrc > ~/.vimrc
+	curl https://raw.githubusercontent.com/schollz/dotfiles/master/dircolors.monokai > /tmp/dircolors.monokai
+	dircolors /tmp/dircolors.monokai >> ~/.zshrc
+
 run: dust
 	docker build --rm -t norns-docker .
 	docker run --rm -it \
