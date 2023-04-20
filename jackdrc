@@ -1,1 +1,1 @@
-/usr/bin/jackd -R -P 95 -d alsa -p 1024
+/usr/bin/jackd -R -P 95 -d dummy -p 1024 

@@ -10,12 +10,12 @@ ENV LANG=C.UTF-8 \
     NORNS_REPO=https://github.com/schollz/norns.git \
     MAIDEN_TAG=ce4471e25a45c87040817c0619f3596fa43060aa \
     MAIDEN_REPO=https://github.com/schollz/maiden.git \
-    GOLANG_VERSION=1.19.4 \
+    GOLANG_VERSION=1.20.2 \
     JACK2_VERSION=1.9.19 \
     LIBMONOME_VERSION=1.4.4 \
     NANOMSG_VERSION=1.1.5 \
-    SUPERCOLLIDER_VERSION=3.12.2 \
-    SUPERCOLLIDER_PLUGINS_VERSION=3.11.1
+    SUPERCOLLIDER_VERSION=3.13.0 \
+    SUPERCOLLIDER_PLUGINS_VERSION=3.13.0
 
 
 RUN apt-get update -yq
@@ -212,19 +212,31 @@ RUN git clone $NORNS_REPO && \
 
 # Build PortedPlugins
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions/
-RUN cd /tmp &&  wget https://github.com/supercollider/supercollider/archive/refs/tags/Version-3.12.2.tar.gz && \
-    tar -xvzf Version-3.12.2.tar.gz && \
-    rm Version-3.12.2.tar.gz && \
-    git clone https://github.com/madskjeldgaard/portedplugins && \
+RUN cd /tmp &&  wget https://github.com/supercollider/supercollider/archive/refs/tags/Version-3.13.0.tar.gz && \
+    tar -xvzf Version-3.13.0.tar.gz && \
+    rm Version-3.13.0.tar.gz && \
+    git clone https://github.com/schollz/portedplugins && \
     cd portedplugins && \
     git submodule update --init --recursive && \
-    sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.cpp && \
-    sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.h && \
+    # sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.cpp && \
+    # sed -i 's/^/#include <stddef.h>\n/' /tmp/portedplugins/DaisySP/Source/Filters/allpass.h && \
     mkdir build && \
     cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=/tmp/supercollider-Version-3.12.2 -DCMAKE_INSTALL_PREFIX=/home/we/.local/share/SuperCollider/Extensions/ -DSUPERNOVA=OFF && \
+    cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=/tmp/supercollider-Version-3.13.0 -DCMAKE_INSTALL_PREFIX=/home/we/.local/share/SuperCollider/Extensions/ -DSUPERNOVA=OFF && \
     cmake --build . --config Release && \
     cmake --build . --config Release --target install
+# RUN cd /tmp &&  wget https://github.com/supercollider/supercollider/archive/refs/tags/Version-3.13.0.tar.gz && \
+#     tar -xvzf Version-3.13.0.tar.gz && \
+#     rm Version-3.13.0.tar.gz && \
+#     git clone https://github.com/elgiano/XPlayBuf /tmp/xplaybuf && \
+#     cd /tmp/xplaybuf && \ 
+#     mkdir -p /tmp/xplaybuf/build && \
+#     cd /tmp/xplaybuf/build && \
+#     cmake .. -DCMAKE_BUILD_TYPE=Release -DSC_PATH=/tmp/supercollider-Version-3.13.0 -DCMAKE_INSTALL_PREFIX=/home/we/.local/share/SuperCollider/Extensions/ -DSUPERNOVA=OFF && \
+#     cmake --build . --config Release && \
+#     cmake --build . --config Release --target install
+
+
 
 ## build oled server
 COPY ["oled-server.go", "/home/we/oled-server.go"]
@@ -244,9 +256,9 @@ RUN sed -i 's/screensaver.time = 900/screensaver.time = 90000000/g' /home/we/nor
 #RUN sed -i 's/elseif _menu.mode then _menu.keycode(c,value)/elseif (c=="F1" or c=="F2" or c=="F3" or c=="F4") and value==1 then _menu.set_mode(true); _menu.keycode(c,value) elseif (c=="F5" and value==1) then _menu.set_mode(not _menu.mode) elseif _menu.mode then _menu.keycode(c,value)/g' norns/lua/core/keyboard.lua
 RUN mkdir -p /home/we/.local/share/SuperCollider/Extensions
 RUN cp /home/we/norns/sc/norns-config.sc /home/we/.local/share/SuperCollider/Extensions/
-RUN git clone https://github.com/schollz/faustsc /tmp/faustsc && cd /tmp/faustsc && \
-    make && \
-    mv /tmp/faustsc/fverb/build /home/we/.local/share/SuperCollider/Extensions/fverb
+# RUN git clone https://github.com/schollz/faustsc /tmp/faustsc && cd /tmp/faustsc && \
+#     make && \
+#     mv /tmp/faustsc/fverb/build /home/we/.local/share/SuperCollider/Extensions/fverb
 
 ## copy restart files
 COPY restart_sclang.sh /home/we/norns/restart_sclang.sh

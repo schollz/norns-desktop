@@ -134,6 +134,5 @@ deps:
 	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o strbuf.o strbuf.c
 	cd lua-cjson && cc -c -O3 -Wall -pedantic -DNDEBUG  -I/usr/include/lua5.3 -fpic -o fpconv.o fpconv.c
 	cd lua-cjson && cc  -shared -o cjson.so lua_cjson.o strbuf.o fpconv.o
-	cp lua-cjson/cjson.so dust/code/zxcvbn/lib/
 	cp lua-cjson/cjson.so dust/code/amenbreak/lib/
 	cp lua-cjson/cjson.so dust/code/acrostic/lib/
