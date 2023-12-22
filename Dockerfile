@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:bookworm
 LABEL stage=setup
 
 
@@ -10,16 +10,15 @@ ENV LANG=C.UTF-8 \
     NORNS_REPO=https://github.com/schollz/norns.git \
     MAIDEN_TAG=ce4471e25a45c87040817c0619f3596fa43060aa \
     MAIDEN_REPO=https://github.com/schollz/maiden.git \
-    GOLANG_VERSION=1.20.3 \
-    JACK2_VERSION=1.9.19 \
+    GOLANG_VERSION=1.21.4 \
+    JACK2_VERSION=1.9.22 \
     LIBMONOME_VERSION=1.4.4 \
     NANOMSG_VERSION=1.1.5 \
     SUPERCOLLIDER_VERSION=3.13.0 \
     SUPERCOLLIDER_PLUGINS_VERSION=3.13.0
 
-
 RUN apt-get update -yq
-RUN apt-get install -qy --no-install-recommends \
+RUN apt-get install -y \
             libncursesw5-dev sox sudo git libicu-dev libudev-dev pkg-config libncurses5-dev libssl-dev \
             apt-transport-https \
             dbus \ 
@@ -30,6 +29,8 @@ RUN apt-get install -qy --no-install-recommends \
             bzip2 \
             cmake \
             curl \
+            jackd \
+            libjack-dev \
             gdb \
             git \
             ladspalist \
@@ -50,9 +51,9 @@ RUN apt-get install -qy --no-install-recommends \
             libxt-dev \
             luarocks \
             pkg-config \
-            python-dev \
+            python3-dev \
             unzip \
-            wget libstdc++ \ 
+            wget \ 
             cdbs libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev git make cmake gcc g++ libmad0-dev \
             libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
             libboost-program-options-dev \
@@ -76,21 +77,21 @@ RUN wget https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz -O /tmp/go.t
 RUN luarocks install ldoc
 
 ## INSTALL JACK2 ##
-RUN mkdir -p /tmp/jack2 && \ 
-    wget https://github.com/jackaudio/jack2/archive/v$JACK2_VERSION.tar.gz -O /tmp/jack2/jack2.tar.gz && \
-    cd /tmp/jack2 && \
-    tar xvfz jack2.tar.gz && \
-    cd /tmp/jack2/jack2-$JACK2_VERSION && \
-    ./waf configure --classic --alsa=yes --firewire=no --iio=no --portaudio=no --prefix /usr && \
-    ./waf && ./waf install && cd / && rm -rf /tmp/jack2 && ldconfig
+#RUN mkdir -p /tmp/jack2 && \ 
+#    wget https://github.com/jackaudio/jack2/archive/v$JACK2_VERSION.tar.gz -O /tmp/jack2/jack2.tar.gz && \
+#    cd /tmp/jack2 && \
+#    tar xvfz jack2.tar.gz && \
+#    cd /tmp/jack2/jack2-$JACK2_VERSION && \
+#    ./waf configure --classic --alsa=yes --firewire=no --iio=no --portaudio=no --prefix /usr && \
+#   ./waf && ./waf install && cd / && rm -rf /tmp/jack2 && ldconfig
 
 ## UPGRADE CMAKE ##
-RUN mkdir -p /tmp/cmake  && cd /tmp/cmake && \
-    wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-linux-x86_64.tar.gz && \ 
-    tar -xvzf cmake-3.24.1-linux-x86_64.tar.gz && \
-    mv cmake-3.24.1-linux-x86_64/bin/* /usr/local/bin/ && \
-    mv cmake-3.24.1-linux-x86_64/share/cmake-3.24 /usr/local/share/ && \
-    cd / && rm -rf /tmp/cmake
+#RUN mkdir -p /tmp/cmake  && cd /tmp/cmake && \
+#    wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-linux-x86_64.tar.gz && \ 
+#    tar -xvzf cmake-3.24.1-linux-x86_64.tar.gz && \
+#    mv cmake-3.24.1-linux-x86_64/bin/* /usr/local/bin/ && \
+#    mv cmake-3.24.1-linux-x86_64/share/cmake-3.24 /usr/local/share/ && \
+#    cd / && rm -rf /tmp/cmake
 
 ## INSTALL SUPERCOLLIDER ##
 RUN mkdir -p /tmp/supercollider && cd /tmp/supercollider && \
@@ -134,6 +135,7 @@ RUN mkdir -p /tmp/nanomsg && cd /tmp/nanomsg && \
     cd / && rm -rf /tmp/nanomsg && ldconfig
 
 ## INSTALL LIBMONOME ##
+RUN sudo apt install python-is-python3
 RUN cd /tmp/ && wget https://github.com/monome/libmonome/archive/v$LIBMONOME_VERSION.tar.gz -O libmonome.tar.gz && \
     tar -xvzf libmonome.tar.gz && cd /tmp/libmonome-$LIBMONOME_VERSION && \
     ./waf configure --disable-udev --disable-osc && \
@@ -167,14 +169,17 @@ RUN apt-get update -q && \
              lame \
              espeak \
              ffmpeg \
+             jackd2 \
+             libjack-jackd2-dev \ 
              vorbis-tools \
              darkice && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/* && \
-     pip3 install tmuxp==1.4.0
+     pip3 install --break-system-packages tmuxp==1.4.0
 
 # darkice installs libjack-jackd2-0, we need to remove it
-RUN dpkg --remove --force-depends libjack-jackd2-0
+#RUN dpkg --remove --force-depends libjack-jackd2-0
+# RUN jack_connect -h
 
 ## add we / sleep ##
 RUN groupadd we -g 1000 && \
@@ -184,7 +189,7 @@ USER we
 WORKDIR /home/we
 
 ## INSTALL NODE ##
-RUN wget https://nodejs.org/dist/v16.17.0/node-v16.17.0-linux-x64.tar.xz -O /tmp/node.tar.xz
+RUN wget https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz -O /tmp/node.tar.xz
 RUN mkdir -p /home/we/node
 RUN tar -xJf /tmp/node.tar.xz -C /home/we/node
 RUN mv /home/we/node/node-*/* /home/we/node/
@@ -203,11 +208,16 @@ RUN git clone $MAIDEN_REPO maiden_src && \
      /home/we/maiden/project-setup.sh
 
 # # MATRON (Norns)
-RUN git clone $NORNS_REPO && \
+WORKDIR /home/we
+RUN git clone https://github.com/monome/norns && \
      cd /home/we/norns && \
-     git checkout $NORNS_TAG && \
-     git submodule update --init --recursive && \
-     ./waf configure --desktop && \
+     git checkout v2.7.9 && \
+     git submodule update --init --recursive
+WORKDIR /home/we/norns
+RUN wget https://waf.io/waf-2.0.26
+RUN mv waf-2.0.26 waf
+RUN chmod +x waf
+RUN ./waf configure --desktop && \
      ./waf build --desktop
 
 # Build PortedPlugins
