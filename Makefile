@@ -57,6 +57,8 @@ rund: dust
 		--device /dev/snd \
 		--group-add $(AUDIOGROUP) \
 		norns-docker 
+# 		--device /dev/ttyUSB0 \
+# 		--group-add $(GRIDGROUP) \
 	docker logs --follow $(docker container ls -q)
 
 
