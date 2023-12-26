@@ -288,6 +288,10 @@ COPY ["tmux.conf", "/home/we/.tmux.conf"]
 COPY icecast.xml /etc/icecast2/icecast.xml
 COPY darkice.cfg /etc/darkice.cfg
 COPY matronrc.lua /home/we/norns/matronrc.lua
+COPY repl-endpoints.json /home/we/maiden_src/dist/maiden/app/build/repl-endpoints.json
+COPY repl-endpoints.json /home/we/maiden_src/web/build/repl-endpoints.json
+COPY repl-endpoints.json /home/we/maiden_src/web/public/repl-endpoints.json
+COPY repl-endpoints.json /home/we/maiden/app/build/repl-endpoints.json
 # COPY maiden /home/we/maiden/maiden
 # CMD /bin/bash
 CMD /home/we/start_norns.sh
