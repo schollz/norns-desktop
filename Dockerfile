@@ -12,7 +12,7 @@ ENV LANG=C.UTF-8 \
     MAIDEN_REPO=https://github.com/schollz/maiden.git \
     GOLANG_VERSION=1.21.4 \
     JACK2_VERSION=1.9.22 \
-    LIBMONOME_VERSION=1.4.4 \
+    LIBMONOME_VERSION=1.4.7 \
     NANOMSG_VERSION=1.1.5 \
     SUPERCOLLIDER_VERSION=3.13.0 \
     SUPERCOLLIDER_PLUGINS_VERSION=3.13.0
@@ -21,7 +21,7 @@ RUN apt-get update -yq
 RUN apt-get install -y \
             libncursesw5-dev sox sudo git libicu-dev libudev-dev pkg-config libncurses5-dev libssl-dev \
             apt-transport-https \
-            dbus \ 
+            dbus libaubio-dev \ 
             apt-utils \
             ca-certificates \
             gnupg2 \
@@ -281,7 +281,7 @@ RUN chown -R we:we /home/we/norns/restart_*.sh
 RUN echo 'we:sleep' | chpasswd
 RUN echo 'we ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 USER we
-
+RUN echo "ok"
 COPY ["norns.yaml", "/home/we/.tmuxp/norns.yaml"]
 COPY ["start_norns.sh", "/home/we/"]
 COPY ["tmux.conf", "/home/we/.tmux.conf"]
