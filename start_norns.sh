@@ -3,6 +3,7 @@
 export DISPLAY=:0
 export JACK_NO_START_SERVER=1
 export JACK_NO_AUDIO_RESERVATION=1
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64/
 
 sudo /etc/init.d/dbus start
 sudo chown -R we:we /home/we/dust
