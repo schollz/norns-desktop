@@ -6,7 +6,7 @@ LABEL stage=setup
 ENV LANG=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive \
     PATH="/usr/local/go/bin:/home/we/node/bin:/home/we/node/node_modules/bin:$PATH" \
-    NORNS_TAG=2204a94628babbd03025fca41f838b40a7ed6a2a \
+    NORNS_TAG=8e72d2015e1a966c023834a24e6a6fbe998e2ce4 \
     NORNS_REPO=https://github.com/schollz/norns.git \
     MAIDEN_TAG=ce4471e25a45c87040817c0619f3596fa43060aa \
     MAIDEN_REPO=https://github.com/schollz/maiden.git \
@@ -209,9 +209,9 @@ RUN git clone $MAIDEN_REPO maiden_src && \
 
 # # MATRON (Norns)
 WORKDIR /home/we
-RUN git clone https://github.com/monome/norns && \
+RUN git clone https://github.com/schollz/norns && \
      cd /home/we/norns && \
-     git checkout v2.7.9 && \
+     git checkout $NORNS_TAG && \
      git submodule update --init --recursive
 WORKDIR /home/we/norns
 RUN wget https://waf.io/waf-2.0.26
